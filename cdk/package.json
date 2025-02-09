@@ -1,0 +1,13 @@
+{
+  "name": "go-lambda-docker-cdk",
+  "version": "1.0.0",
+  "description": "CDK project to deploy a Go Lambda function with Docker",
+  "dependencies": {
+    "aws-cdk-lib": "^2.0.0",
+    "constructs": "^10.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^4.0.0",
+    "ts-node": "^10.0.0"
+  }
+}
