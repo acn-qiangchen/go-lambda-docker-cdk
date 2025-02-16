@@ -38,8 +38,8 @@ jobs:
       # 5️ Install Dependencies
       - name: Install Dependencies
         run: |
-        cd cdk
-        npm install
+          cd cdk
+          npm install
 
       # 6️ Configure AWS Credentials (OIDC-based authentication)
       - name: Configure AWS Credentials
@@ -67,17 +67,17 @@ jobs:
       # 9️ bootstrap CDK
       - name: CDK Bootstrap
         run: |
-        cd cdk
-        cdk bootstrap aws://905418402570/us-east-1
+          cd cdk
+          cdk bootstrap aws://905418402570/us-east-1
 
       # 9️ Synthesize CloudFormation template
       - name: CDK Synth
         run: |
-        cd cdk
-        cdk synth
+          cd cdk
+          cdk synth
 
       # 10 Deploy CDK Stack
       - name: CDK Deploy
         run: |
-        cd cdk
-        cdk deploy --require-approval never
+          cd cdk
+          cdk deploy --require-approval never
