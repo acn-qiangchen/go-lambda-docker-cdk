@@ -9,7 +9,9 @@ export class LambdaStack extends cdk.Stack {
 
     // Define Lambda function using Docker image
     const lambdaFunction = new lambda.DockerImageFunction(this, 'GoLambdaFunction', {
-      code: lambda.DockerImageCode.fromImageAsset('../lambda'),
+      code: lambda.DockerImageCode.fromImageAsset('../lambda', {
+        platform: cdk.aws_ecr_assets.Platform.LINUX_AMD64,
+      }),
     });
 
     // API Gateway to expose Lambda function
