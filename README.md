@@ -28,3 +28,4 @@
    ```sh
    curl -X GET <API_GATEWAY_URL>
    ```
+
