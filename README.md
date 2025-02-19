@@ -29,3 +29,47 @@
    curl -X GET <API_GATEWAY_URL>
    ```
 
+## Steps to setup AWS WebIdentity federation for Github action
+1. open AWS console and create role
+2. select "web identity" as trust entity
+3. trust entity type : web identity
+4. create github identity provider : 
+   ```
+   provider URL: https://token.actions.githubusercontent.com
+   Audience: sts.amazonaws.com
+   ```
+5. choose the idp and audience created above
+6. input the github organization name ( or account name). 
+7. add permission to role created. (choose AdministratorAccess for test use)
+   ```
+   {
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "sts:AssumeRoleWithWebIdentity"
+            ],
+            "Resource": "*",
+            "Condition": {
+                "StringEquals": {
+                    "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
+                    "token.actions.githubusercontent.com:sub": "repo:YOUR_GITHUB_USER/YOUR_REPO:ref:refs/heads/master"
+                }
+            }
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "ecr:*",
+                "lambda:*",
+                "apigateway:*",
+                "cloudformation:*",
+                "s3:*",
+                "iam:PassRole"
+            ],
+            "Resource": "*"
+        }
+    ]
+   }
+   ```
