@@ -66,7 +66,8 @@
                 "apigateway:*",
                 "cloudformation:*",
                 "s3:*",
-                "iam:PassRole"
+                "iam:*",
+                "ssm:*",
             ],
             "Resource": "*"
         }

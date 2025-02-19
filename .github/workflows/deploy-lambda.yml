@@ -45,7 +45,7 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: arn:aws:iam::211125333901:role/githubActionOIDCRole
+          role-to-assume: arn:aws:iam::590183991655:role/githubActionOIDCRole
           aws-region: us-east-1
 
       # 7️ Build the Go Lambda Function
@@ -68,7 +68,7 @@ jobs:
       - name: CDK Bootstrap
         run: |
           cd cdk
-          cdk bootstrap aws://211125333901/us-east-1
+          cdk bootstrap aws://590183991655/us-east-1
 
       # 9️ Synthesize CloudFormation template
       - name: CDK Synth
