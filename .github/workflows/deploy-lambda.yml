@@ -45,7 +45,7 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: arn:aws:iam::211125333901:role/GitHubActionRole
+          role-to-assume: arn:aws:iam::211125333901:role/githubActionOIDCRole
           aws-region: us-east-1
 
       # 7️ Build the Go Lambda Function
