@@ -71,13 +71,25 @@ jobs:
           cdk bootstrap aws://590183991655/us-east-1
 
       # 9️ Synthesize CloudFormation template
-      - name: CDK Synth
+      - name: CDK Synth EcrStack
         run: |
           cd cdk
-          cdk synth
+          cdk synth EcrStack
 
       # 10 Deploy CDK Stack
-      - name: CDK Deploy
+      - name: CDK Deploy EcrStack
         run: |
           cd cdk
-          cdk deploy --require-approval never
+          cdk deploy EcrStack --require-approval never
+
+      # 9️ Synthesize CloudFormation template
+      - name: CDK Synth LambdaStack
+        run: |
+          cd cdk
+          cdk synth LambdaStack
+
+      # 10 Deploy CDK Stack
+      - name: CDK Deploy LambdaStack
+        run: |
+          cd cdk
+          cdk deploy LambdaStack --require-approval never
