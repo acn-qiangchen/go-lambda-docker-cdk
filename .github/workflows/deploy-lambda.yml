@@ -68,7 +68,7 @@ jobs:
       - name: CDK Bootstrap
         run: |
           cd cdk
-          cdk bootstrap aws://905418402570/us-east-1
+          cdk bootstrap aws://211125333901/us-east-1
 
       # 9️ Synthesize CloudFormation template
       - name: CDK Synth
