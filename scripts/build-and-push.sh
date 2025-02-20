@@ -9,7 +9,7 @@ aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --
 docker compose -f $COMPOSE_FILE build --parallel
 
 #list all images in the compose file
-IMAGES=$(docker compose -f $COMPOSE_FILE images --quiet)
+IMAGES=$(docker compose -f $COMPOSE_FILE services --quiet)
 echo "to push images: $IMAGES"
 
 for IMAGE in $IMAGES; do
