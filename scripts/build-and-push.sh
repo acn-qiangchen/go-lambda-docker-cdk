@@ -10,6 +10,7 @@ docker compose -f $COMPOSE_FILE build --parallel
 
 #list all images in the compose file
 IMAGES=$(docker compose -f $COMPOSE_FILE images --quiet)
+echo "to push images: $IMAGES"
 
 for IMAGE in $IMAGES; do
     ECR_URI="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE"
