@@ -1,4 +1,4 @@
-name: Deploy AWS Lambda with CDK
+name: Create ECR
 
 on:
   workflow_dispatch:

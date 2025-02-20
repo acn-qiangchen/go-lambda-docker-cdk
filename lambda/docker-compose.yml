@@ -1,0 +1,11 @@
+version: '3.8'
+services:
+  go-lambda-docker:
+    build:
+      context: ./image1
+  # image2:
+  #   build:
+  #     context: ./image2
+  # image3:
+  #   build:
+  #     context: ./image3
