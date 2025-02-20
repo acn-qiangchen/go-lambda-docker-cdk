@@ -3,7 +3,7 @@ services:
   go-lambda-docker:
     build:
       context: ./image1
-    image: go-lambda-docker
+    image: "go-lambda-docker:latest"
   # image2:
   #   build:
   #     context: ./image2
