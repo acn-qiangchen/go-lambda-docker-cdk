@@ -12,7 +12,7 @@ env:
   ACCOUNT_ID: 992382474961  # Change to your account ID
   GITHUB_ROLE_NAME: GithubActionOIDCRole  # Change to your role name
 
-  permissions:
+permissions:
   id-token: write
   contents: read
 
