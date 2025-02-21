@@ -56,9 +56,9 @@ jobs:
       # Synthesize CloudFormation template
       - name: CDK Synth
         working-directory: cdk
-        run: cdk synth LambdaStack
+        run: cdk synth SsmStack LambdaStack
 
       # Deploy CDK Stack
       - name: CDK Deploy
         working-directory: cdk
-        run: cdk deploy LambdaStack --require-approval never
+        run: cdk deploy SsmStack LambdaStack --require-approval never
