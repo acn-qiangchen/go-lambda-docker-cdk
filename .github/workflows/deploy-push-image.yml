@@ -8,7 +8,7 @@ on:
 
 env:
   AWS_REGION: us-east-1  # Change to your region
-  ECR_REPOSITORY_PREFIX: my-app  # Prefix for your ECR repositories
+  ECR_REPOSITORY_PREFIX: lambda  # Prefix for your ECR repositories
   ACCOUNT_ID: 992382474961  # Change to your account ID
   GITHUB_ROLE_NAME: GithubActionOIDCRole  # Change to your role name
 
@@ -49,16 +49,14 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Get ECR Registry
-        id: get-registry
-        run: |
-          REGISTRY=$(aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin | grep -o 'https://.*' | head -n1 | sed 's/https:\/\///')
-          echo "registry=$REGISTRY" >> $GITHUB_OUTPUT
+      # - name: login ECR Registry
+      #   id: get-registry
+      #   run: aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ env.ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
 
       - name: Build, Tag, and Push Image to ECR
         env:
-          ECR_REGISTRY: ${{ steps.get-registry.outputs.registry }}
-          ECR_REPOSITORY: ${{ env.ECR_REPOSITORY_PREFIX }}-${{ matrix.image.name }}
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ env.ECR_REPOSITORY_PREFIX }}/${{ matrix.image.name }}
           IMAGE_TAG: ${{ github.sha }}
         working-directory: ${{ matrix.image.path }}
         run: |
