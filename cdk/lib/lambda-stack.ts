@@ -30,7 +30,6 @@ export class LambdaStack extends cdk.Stack {
     });
 
     lambdaNames.forEach((name) => {
-
       // Fetch config from SSM
       const configParam = ssm.StringParameter.fromStringParameterName(
         this,
@@ -43,7 +42,7 @@ export class LambdaStack extends cdk.Stack {
       const repository = ecr.Repository.fromRepositoryName(this, `${name}-repo`, config.ecrRepo);
 
       // Create Lambda function
-      const fn = new lambda.DockerImageFunction(this, `${name}`, {
+      const fn = new lambda.DockerImageFunction(this, name, {
         code: lambda.DockerImageCode.fromEcr(repository, { tagOrDigest: `${config.imageTag}` || 'latest' }),
         functionName: name,
         memorySize: config.memorySize,
