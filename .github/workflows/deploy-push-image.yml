@@ -1,56 +1,73 @@
-name: Build and Push Docker Image
+name: Build and Push Docker Images to ECR
 
 on:
   workflow_dispatch:
   # push:
   #   branches:
-  #     - master
+  #     - main
 
-permissions:
-  id-token: write
-  contents: read
+env:
+  AWS_REGION: us-east-1  # Change to your region
+  ECR_REPOSITORY_PREFIX: my-app  # Prefix for your ECR repositories
+  ACCOUNT_ID: 992382474961  # Change to your account ID
+  GITHUB_ROLE_NAME: GithubActionsOIDCRole  # Change to your role name
+
 
 jobs:
-  deploy:
-    name: Build and Push Docker Image
+  build-and-push:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write    # Required for OIDC
+      contents: read     # Required for checkout
+
+    strategy:
+      matrix:
+        image:
+          - name: image1
+            path: ./image1
+            dockerfile: Dockerfile
+          - name: image2
+            path: ./image2
+            dockerfile: Dockerfile
+          - name: image3
+            path: ./image3
+            dockerfile: Dockerfile
+      fail-fast: false
 
     steps:
-      # 1️ Checkout repository
-      - name: Checkout Code
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      # # 2️ Setup Node.js for CDK
-      # - name: Setup Node.js
-      #   uses: actions/setup-node@v4
-      #   with:
-      #     node-version: 18
-
-      # 3️ Setup Go for Lambda
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: 1.18
-
-      # # 4️ Install AWS CDK
-      # - name: Install AWS CDK
-      #   run: npm install -g aws-cdk
-
-      # # 5️ Install Dependencies
-      # - name: Install Dependencies
-      #   run: |
-      #     cd cdk
-      #     npm install
-
-      # 6️ Configure AWS Credentials (OIDC-based authentication)
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: arn:aws:iam::211125331966:role/githubActionOIDCRole
-          aws-region: us-east-1
+          role-to-assume: arn:aws:iam::${{ env.ACCOUNT_ID }}:role/${{ env.GITHUB_ROLE_NAME }}  # Replace with your role ARN
+          aws-region: ${{ env.AWS_REGION }}
+          role-duration-seconds: 3600  # Duration of the assumed role (1 hour)
 
-      # 7️ build and push Docker Image (ECR)
-      - name: Build and Push Docker Image
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Get ECR Registry
+        id: get-registry
         run: |
-          chmod +x scripts/build-and-push.sh
-          ./scripts/build-and-push.sh
+          REGISTRY=$(aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin | grep -o 'https://.*' | head -n1 | sed 's/https:\/\///')
+          echo "registry=$REGISTRY" >> $GITHUB_OUTPUT
+
+      - name: Build, Tag, and Push Image to ECR
+        env:
+          ECR_REGISTRY: ${{ steps.get-registry.outputs.registry }}
+          ECR_REPOSITORY: ${{ env.ECR_REPOSITORY_PREFIX }}-${{ matrix.image.name }}
+          IMAGE_TAG: ${{ github.sha }}
+        working-directory: ${{ matrix.image.path }}
+        run: |
+          # Build the image
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f ${{ matrix.image.dockerfile }} .
+          
+          # Push the image
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          
+          # Tag and push with 'latest'
+          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
