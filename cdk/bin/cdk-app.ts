@@ -9,7 +9,7 @@ const env = {
   region: process.env.CDK_DEFAULT_REGION,
 };
 
-const repositoryPrefix = process.env.REPOSITORY_PREFIX || 'my-app';
+const repositoryPrefix = process.env.ECR_REPOSITORY_PREFIX || 'my-app';
 const imageTag = process.env.IMAGE_TAG || 'latest';  // Fallback to 'latest' if not set
 
 new EcrStack(app, 'EcrStack',{
