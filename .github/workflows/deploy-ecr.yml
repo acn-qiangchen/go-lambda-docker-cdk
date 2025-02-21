@@ -6,91 +6,59 @@ on:
   #   branches:
   #     - master
 
+env:
+  AWS_REGION: us-east-1  # Change to your region
+  ECR_REPOSITORY_PREFIX: lambda  # Prefix for your ECR repositories
+  ACCOUNT_ID: 992382474961  # Change to your account ID
+  GITHUB_ROLE_NAME: GithubActionOIDCRole  # Change to your role name
+
 permissions:
   id-token: write
   contents: read
 
 jobs:
   deploy:
-    name: Deploy to AWS
+    name: Create ECR
     runs-on: ubuntu-latest
 
     steps:
-      # 1️ Checkout repository
+      # Checkout repository
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # 2️ Setup Node.js for CDK
+      # Setup Node.js for CDK
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 18
 
-      # 3️ Setup Go for Lambda
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: 1.18
-
-      # 4️ Install AWS CDK
+      # Install AWS CDK
       - name: Install AWS CDK
         run: npm install -g aws-cdk
 
-      # 5️ Install Dependencies
+      # Install Dependencies
       - name: Install Dependencies
-        run: |
-          cd cdk
-          npm install
+        working-directory: cdk
+        run: npm install
 
-      # 6️ Configure AWS Credentials (OIDC-based authentication)
+      # Configure AWS Credentials (OIDC-based authentication)
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: arn:aws:iam::211125331966:role/githubActionOIDCRole
-          aws-region: us-east-1
+          role-to-assume: arn:aws:iam::${{ env.ACCOUNT_ID }}:role/${{ env.GITHUB_ROLE_NAME }}  # Replace with your role ARN
+          aws-region: ${{ env.AWS_REGION }}
 
-      # 7️ Build the Go Lambda Function
-      # - name: Build Lambda Function
-      #   run: |
-      #     cd lambda
-      #     go mod tidy
-      #     GOOS=linux GOARCH=amd64 go build -o main main.go
-      #     cd ..
-
-      # 8️ Build and Push Docker Image (ECR)
-      # - name: Build and Push Docker Image
-      #   run: |
-      #     aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin YOUR_AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com
-      #     docker build -t go-lambda ./lambda
-      #     docker tag go-lambda:latest YOUR_AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/go-lambda:latest
-      #     docker push YOUR_AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/go-lambda:latest
-
-      # 9️ bootstrap CDK
+      # bootstrap CDK
       - name: CDK Bootstrap
-        run: |
-          cd cdk
-          cdk bootstrap aws://211125331966/us-east-1
+        working-directory: cdk
+        run: cdk bootstrap aws://${{env.ACCOUNT_ID}}/${{env.AWS_REGION}}
 
-      # 9️ Synthesize CloudFormation template
+      # Synthesize CloudFormation template
       - name: CDK Synth EcrStack
-        run: |
-          cd cdk
-          cdk synth EcrStack
+        working-directory: cdk
+        run: cdk synth EcrStack
 
-      # 10 Deploy CDK Stack
+      # Deploy CDK Stack
       - name: CDK Deploy EcrStack
-        run: |
-          cd cdk
-          cdk deploy EcrStack --require-approval never
-
-      # # 9️ Synthesize CloudFormation template
-      # - name: CDK Synth LambdaStack
-      #   run: |
-      #     cd cdk
-      #     cdk synth LambdaStack
-
-      # # 10 Deploy CDK Stack
-      # - name: CDK Deploy LambdaStack
-      #   run: |
-      #     cd cdk
-      #     cdk deploy LambdaStack --require-approval never
+        working-directory: cdk
+        run: cdk deploy EcrStack --require-approval never
