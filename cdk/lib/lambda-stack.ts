@@ -36,7 +36,7 @@ export class LambdaStack extends cdk.Stack {
         `${name}-config-param`,
         `/lambda/${name}/config`
       );
-      const config = JSON.parse(configParam.stringValue);
+      const config = JSON.parse(configParam.stringValue || '{}');
 
       // get the ECR repository 
       const repository = ecr.Repository.fromRepositoryName(this, `${name}-repo`, config.ecrRepo);
