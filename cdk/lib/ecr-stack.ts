@@ -12,9 +12,9 @@ export class EcrStack extends cdk.Stack {
 
     // Define your repositories here
     const repositories = [
-      { name: `${props.repositoryPrefix}-image1`, lifecycleMaxImages: 10 },
-      { name: `${props.repositoryPrefix}-image2`, lifecycleMaxImages: 10 },
-      { name: `${props.repositoryPrefix}-image3`, lifecycleMaxImages: 10 },
+      { name: `${props.repositoryPrefix}/image1`, lifecycleMaxImages: 10 },
+      { name: `${props.repositoryPrefix}/image2`, lifecycleMaxImages: 10 },
+      { name: `${props.repositoryPrefix}/image3`, lifecycleMaxImages: 10 },
     ];
 
     // Create ECR repositories dynamically
