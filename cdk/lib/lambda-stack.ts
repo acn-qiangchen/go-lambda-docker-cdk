@@ -3,6 +3,7 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway'; // Import the 'apigateway' module
+import * as ssm from 'aws-cdk-lib/aws-ssm'; // Import the 'ssm' module
 
 interface LambdaStackProps extends cdk.StackProps {
   repositoryPrefix: string;  // Matches ECR repository prefix
@@ -13,32 +14,10 @@ export class LambdaStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: LambdaStackProps) {
     super(scope, id, props);
 
-    // Define Lambda functions using ECR images
-    const lambdaFunctions = [
-      {
-        name: 'lambda-function1',
-        ecrRepo: `${props.repositoryPrefix}/image1`,
-        path: 'function1',
-        memorySize: 256,
-        timeout: cdk.Duration.seconds(15),
-        imageTag: props.imageTag,
-      },
-      {
-        name: 'lambda-function2',
-        ecrRepo: `${props.repositoryPrefix}/image2`,
-        path: 'function2',
-        memorySize: 256,
-        timeout: cdk.Duration.seconds(15),
-        imageTag: props.imageTag,
-      },
-      {
-        name: 'lambda-function3',
-        ecrRepo: `${props.repositoryPrefix}/image3`,
-        path: 'function3',
-        memorySize: 256,
-        timeout: cdk.Duration.minutes(15),
-        imageTag: props.imageTag,
-      },
+    const lambdaNames = [
+      'lambda-function1', 
+      'lambda-function2', 
+      'lambda-function3'
     ];
 
     // Create a single API Gateway for all Lambda functions
@@ -50,16 +29,32 @@ export class LambdaStack extends cdk.Stack {
       },
     });
 
-    lambdaFunctions.forEach((config) => {
+    lambdaNames.forEach((name) => {
+      // Fetch config from SSM
+      const configParam = ssm.StringParameter.fromStringParameterName(
+        this,
+        `${name}-config-param`,
+        `/lambda/${name}/config`
+      );
+      const config = JSON.parse(configParam.stringValue);
 
       // get the ECR repository 
-      const repository = ecr.Repository.fromRepositoryName(this, `${config.name}-repo`, config.ecrRepo);
+      const repository = ecr.Repository.fromRepositoryName(this, `${name}-repo`, config.ecrRepo);
 
-      const fn = new lambda.DockerImageFunction(this, `${config.name}`, {
-        code: lambda.DockerImageCode.fromEcr(repository, { tagOrDigest: `${config.imageTag}` }),
-        functionName: config.name,
+      // Create Lambda function
+      const fn = new lambda.DockerImageFunction(this, name, {
+        code: lambda.DockerImageCode.fromEcr(repository, { tagOrDigest: `${config.imageTag}` || 'latest' }),
+        functionName: name,
         memorySize: config.memorySize,
-        timeout: config.timeout,
+        timeout: cdk.Duration.seconds(config.timeoutSeconds),
+        environment: config.environment || {},
+      });
+
+      // Update ARN in SSM
+      new ssm.StringParameter(this, `${name}-arn-param`, {
+        parameterName: `/lambda/${name}/arn`,
+        stringValue: fn.functionArn,
+        description: `ARN for ${name}`,
       });
 
       // Create API resource and method
@@ -67,14 +62,14 @@ export class LambdaStack extends cdk.Stack {
       resource.addMethod('GET', new apigateway.LambdaIntegration(fn));  // Add GET endpoint
 
       // Output Lambda ARN and API endpoint
-      new cdk.CfnOutput(this, `${config.name}-arn`, {
+      new cdk.CfnOutput(this, `${name}-arn`, {
         value: fn.functionArn,
-        description: `ARN for ${config.name}`,
+        description: `ARN for ${name}`,
       });
 
-      new cdk.CfnOutput(this, `${config.name}-endpoint`, {
+      new cdk.CfnOutput(this, `${name}-endpoint`, {
         value: `${api.url}${config.path}`,
-        description: `API endpoint for ${config.name}`,
+        description: `API endpoint for ${name}`,
       });
     });
 

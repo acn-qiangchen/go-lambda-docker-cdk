@@ -54,11 +54,11 @@ jobs:
         run: cdk bootstrap aws://${{env.ACCOUNT_ID}}/${{env.AWS_REGION}}
 
       # Synthesize CloudFormation template
-      - name: CDK Synth
-        working-directory: cdk
-        run: cdk synth LambdaStack
+      # - name: CDK Synth
+      #   working-directory: cdk
+      #   run: cdk synth SsmStack LambdaStack
 
       # Deploy CDK Stack
       - name: CDK Deploy
         working-directory: cdk
-        run: cdk deploy LambdaStack --require-approval never
+        run: cdk deploy SsmStack LambdaStack --require-approval never
