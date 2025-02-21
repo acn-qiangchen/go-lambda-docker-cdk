@@ -31,13 +31,17 @@ export class LambdaStack extends cdk.Stack {
 
     lambdaNames.forEach((name) => {
       // Fetch config from SSM
-      const configParam = ssm.StringParameter.fromStringParameterName(
-        this,
-        `${name}-config-param`,
-        `/lambda/${name}/config`
-      );
-      console.log(`Config for ${name}: ${configParam.stringValue}`);
-      const config = JSON.parse(configParam.stringValue);
+      // const configParam = ssm.StringParameter.fromStringParameterName(
+      //   this,
+      //   `${name}-config-param`,
+      //   `/lambda/${name}/config`
+      // );
+
+      const stringValue = ssm.StringParameter.valueFromLookup(this, `/lambda/${name}/config`);
+
+      // console.log(`Config for ${name}: ${configParam.stringValue}`);
+      // const config = JSON.parse(configParam.stringValue);
+      const config = JSON.parse(stringValue);
 
       // get the ECR repository 
       const repository = ecr.Repository.fromRepositoryName(this, `${name}-repo`, config.ecrRepo);
