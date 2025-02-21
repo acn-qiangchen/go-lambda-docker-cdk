@@ -22,53 +22,43 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️ Checkout repository
+      # Checkout repository
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # 2️ Setup Node.js for CDK
+      # Setup Node.js for CDK
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 18
 
-      # 3️ Setup Go for Lambda
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: 1.18
-
-      # 4️ Install AWS CDK
+      # Install AWS CDK
       - name: Install AWS CDK
         run: npm install -g aws-cdk
 
-      # 5️ Install Dependencies
+      # Install Dependencies
       - name: Install Dependencies
-        run: |
-          cd cdk
-          npm install
+        working-directory: cdk
+        run: npm install
 
-      # 6️ Configure AWS Credentials (OIDC-based authentication)
+      # Configure AWS Credentials (OIDC-based authentication)
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: arn:aws:iam::${{ env.ACCOUNT_ID }}:role/${{ env.GITHUB_ROLE_NAME }}  # Replace with your role ARN
           aws-region: ${{ env.AWS_REGION }}
 
-      # 9️ bootstrap CDK
+      # bootstrap CDK
       - name: CDK Bootstrap
-        run: |
-          cd cdk
-          cdk bootstrap aws://${{env.ACCOUNT_ID}}/${{env.AWS_REGION}}
+        working-directory: cdk
+        run: cdk bootstrap aws://${{env.ACCOUNT_ID}}/${{env.AWS_REGION}}
 
-      # 9️ Synthesize CloudFormation template
+      # Synthesize CloudFormation template
       - name: CDK Synth EcrStack
-        run: |
-          cd cdk
-          cdk synth EcrStack
+        working-directory: cdk
+        run: cdk synth EcrStack
 
-      # 10 Deploy CDK Stack
+      # Deploy CDK Stack
       - name: CDK Deploy EcrStack
-        run: |
-          cd cdk
-          cdk deploy EcrStack --require-approval never
+        working-directory: cdk
+        run: cdk deploy EcrStack --require-approval never
