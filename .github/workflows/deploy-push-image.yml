@@ -24,13 +24,13 @@ jobs:
       matrix:
         image:
           - name: image1
-            path: ./image1
+            path: lambda/image1
             dockerfile: Dockerfile
           - name: image2
-            path: ./image2
+            path: lambda/image2
             dockerfile: Dockerfile
           - name: image3
-            path: ./image3
+            path: lambda/image3
             dockerfile: Dockerfile
       fail-fast: false
 
