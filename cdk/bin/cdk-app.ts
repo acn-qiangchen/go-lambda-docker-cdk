@@ -33,4 +33,4 @@ lambdaStack.addDependency(ssmStack)
 
 // new SsmStack(app, 'SsmStack', {});
 
-//app.synth();
+app.synth();
