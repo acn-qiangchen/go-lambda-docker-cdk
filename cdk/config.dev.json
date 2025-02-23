@@ -1,0 +1,32 @@
+{
+  "lambda": [
+    {
+      "functionName": "lambda-function1",
+      "memorySize": 256,
+      "timeoutSeconds": 30,
+      "path": "function1",
+      "environment": {
+        "ENV": "prod"
+      },
+      "imageName": "image1"
+    },
+    {
+      "functionName": "lambda-function2",
+      "memorySize": 256,
+      "timeoutSeconds": 30,
+      "path": "function2",
+      "environment": {
+        "DB_HOST": "example.com"
+      },
+      "imageName": "image2"
+    },
+    {
+      "functionName": "lambda-function3",
+      "memorySize": 256,
+      "timeoutSeconds": 30,
+      "path": "function3",
+      "environment": {},
+      "imageName": "image3"
+    }
+  ]
+}
