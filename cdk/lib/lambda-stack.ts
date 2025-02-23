@@ -39,7 +39,7 @@ export class LambdaStack extends cdk.Stack {
 
       const stringValue = ssm.StringParameter.valueFromLookup(this, `/lambda/${name}/config`);
 
-      // console.log(`Config for ${name}: ${configParam.stringValue}`);
+      console.log(`Config for ${name}: ${stringValue}`);
       // const config = JSON.parse(configParam.stringValue);
       const config = JSON.parse(stringValue);
 
