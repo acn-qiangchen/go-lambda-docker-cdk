@@ -61,4 +61,4 @@ jobs:
       # Deploy CDK Stack
       - name: CDK Deploy
         working-directory: cdk
-        run: cdk deploy SsmStack LambdaStack --require-approval never
+        run: cdk deploy LambdaStack --require-approval never

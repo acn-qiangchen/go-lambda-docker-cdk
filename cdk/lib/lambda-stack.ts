@@ -39,7 +39,7 @@ export class LambdaStack extends cdk.Stack {
       const repository = ecr.Repository.fromRepositoryName(this, `${config.functionName}-repo`, `${props.repositoryPrefix}/${config.imageName}`);
       // Create Lambda function
       const fn = new lambda.DockerImageFunction(this, config.functionName, {
-        code: lambda.DockerImageCode.fromEcr(repository, { tagOrDigest: `${config.imageTag}` || 'latest' }),
+        code: lambda.DockerImageCode.fromEcr(repository, { tagOrDigest: config.imageTag || 'latest' }),
         functionName: config.functionName,
         memorySize: config.memorySize,
         timeout: cdk.Duration.seconds(config.timeoutSeconds),
