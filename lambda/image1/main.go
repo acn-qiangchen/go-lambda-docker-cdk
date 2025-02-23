@@ -14,7 +14,7 @@ type Response struct {
 }
 
 func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	response := Response{Message: "Hello from Go Lambda by Action!"}
+	response := Response{Message: "Hello from Go Lambda function 1!"}
 	jsonResponse, _ := json.Marshal(response)
 	return events.APIGatewayProxyResponse{
 		StatusCode: http.StatusOK,
