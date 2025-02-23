@@ -9,7 +9,7 @@ on:
 env:
   AWS_REGION: us-east-1  # Change to your region
   ECR_REPOSITORY_PREFIX: lambda  # Prefix for your ECR repositories
-  ACCOUNT_ID: 992382474961  # Change to your account ID
+  ACCOUNT_ID: 381491935825  # Change to your account ID
   GITHUB_ROLE_NAME: GithubActionOIDCRole  # Change to your role name
 
 permissions:
