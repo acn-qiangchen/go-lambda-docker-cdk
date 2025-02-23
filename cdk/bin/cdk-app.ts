@@ -16,7 +16,7 @@ const imageTag = process.env.IMAGE_TAG || 'latest';  // Fallback to 'latest' if 
 // Deploy stacks with dependencies
 //const ssmStack = new SsmStack(app, 'SsmStack', { repositoryPrefix, env });
 const ecrStack = new EcrStack(app, 'EcrStack', { repositoryPrefix, env });
-//const lambdaStack = new LambdaStack(app, 'LambdaStack', { repositoryPrefix, imageTag, env });
+const lambdaStack = new LambdaStack(app, 'LambdaStack', { repositoryPrefix, imageTag, env });
 
 //lambdaStack.addDependency(ssmStack)
 
