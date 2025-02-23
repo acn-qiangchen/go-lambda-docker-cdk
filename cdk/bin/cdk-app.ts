@@ -1,7 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import { LambdaStack } from '../lib/lambda-stack';
 import { EcrStack } from '../lib/ecr-stack';
-import { SsmStack } from '../lib/ssm-stack';
 
 const app = new cdk.App();
 
