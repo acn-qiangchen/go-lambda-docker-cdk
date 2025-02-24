@@ -43,7 +43,11 @@ export class LambdaStack extends cdk.Stack {
         functionName: config.functionName,
         memorySize: config.memorySize,
         timeout: cdk.Duration.seconds(config.timeoutSeconds),
-        environment: config.environment || {},
+        environment: {
+          ...config.environment,
+          // force the function to use the latest image
+          DEPLOYED_AT: new Date().toISOString()
+        },
       });
 
       // Create API resource and method
