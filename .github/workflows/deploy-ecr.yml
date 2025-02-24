@@ -76,5 +76,9 @@ jobs:
 
       # Deploy CDK Stack
       - name: CDK Deploy EcrStack
+        env:
+          ENV: ${{ steps.set-env.outputs.ENV }}
         working-directory: cdk
-        run: cdk deploy EcrStack --require-approval never
+        run: |
+          export ENV=$ENV  # Set ENV in the shell (so that process.env.ENV is set)
+          cdk deploy EcrStack --require-approval never
