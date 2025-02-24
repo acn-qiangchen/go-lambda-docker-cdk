@@ -48,17 +48,33 @@ jobs:
           role-to-assume: arn:aws:iam::${{ env.ACCOUNT_ID }}:role/${{ env.GITHUB_ROLE_NAME }}  # Replace with your role ARN
           aws-region: ${{ env.AWS_REGION }}
 
+      # Determine ENV based on branch
+      - name: Set Environment
+        id: set-env
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/master" ]]; then
+            echo "ENV=prod" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref }}" == "refs/heads/develop" ]]; then
+            echo "ENV=dev" >> $GITHUB_OUTPUT
+          else
+            echo "ENV=dev" >> $GITHUB_OUTPUT  # Default to dev
+          fi
+
       # bootstrap CDK
       - name: CDK Bootstrap
         working-directory: cdk
         run: cdk bootstrap aws://${{env.ACCOUNT_ID}}/${{env.AWS_REGION}}
 
       # Synthesize CloudFormation template
-      # - name: CDK Synth
-      #   working-directory: cdk
-      #   run: cdk synth SsmStack LambdaStack
+      - name: CDK Synth
+        env:
+          ENV: ${{ steps.set-env.outputs.ENV }}
+        working-directory: cdk
+        run: |
+          export ENV=$ENV  # Set ENV in the shell (so that process.env.ENV is set)
+          cdk synth LambdaStack
 
       # Deploy CDK Stack
       - name: CDK Deploy
         working-directory: cdk
-        run: cdk deploy SsmStack LambdaStack --require-approval never
+        run: cdk deploy LambdaStack --require-approval never

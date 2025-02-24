@@ -45,6 +45,18 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
           role-duration-seconds: 3600  # Duration of the assumed role (1 hour)
 
+      # Determine ENV based on branch
+      - name: Set Environment
+        id: set-env
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/master" ]]; then
+            echo "ENV=prd" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref }}" == "refs/heads/develop" ]]; then
+            echo "ENV=dev" >> $GITHUB_OUTPUT
+          else
+            echo "ENV=dev" >> $GITHUB_OUTPUT  # Default to dev
+          fi
+
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
@@ -52,10 +64,10 @@ jobs:
       # - name: login ECR Registry 
       #   id: get-registry
       #   run: aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ env.ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
-
       - name: Build, Tag, and Push Image to ECR
         env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ENV: ${{ steps.set-env.outputs.ENV }}
+          ECR_REGISTRY: ${{ENV}}/${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{ env.ECR_REPOSITORY_PREFIX }}/${{ matrix.image.name }}
           IMAGE_TAG: ${{ github.sha }}
         working-directory: ${{ matrix.image.path }}
@@ -69,3 +81,16 @@ jobs:
           # Tag and push with 'latest'
           docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+      # Save the commit hash to SSM Parameter Store
+      - name: Save Commit Hash to SSM
+        env:
+          ENV: ${{ steps.set-env.outputs.ENV }}
+          ECR_REGISTRY: ${{ENV}}/${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ env.ECR_REPOSITORY_PREFIX }}/${{ matrix.image.name }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          aws ssm put-parameter \
+            --name "/$ECR_REPOSITORY/image-tag" \
+            --value "$IMAGE_TAG" \
+            --type "String" \
+            --overwrite

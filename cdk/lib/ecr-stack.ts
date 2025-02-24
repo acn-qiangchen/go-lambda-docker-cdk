@@ -23,7 +23,7 @@ export class EcrStack extends cdk.Stack {
     // Create ECR repositories dynamically
     lambdaConfig.forEach((config: any) => {
       const repository = new ecr.Repository(this, `${config.imageName}-repo`, {
-        repositoryName: `${props.repositoryPrefix}/${config.imageName}`,
+        repositoryName: `${env}/${props.repositoryPrefix}/${config.imageName}`,
         removalPolicy: cdk.RemovalPolicy.RETAIN, // DESTROY for easy cleanup; use RETAIN for production
         imageScanOnPush: true, // Enable vulnerability scanning
       });
