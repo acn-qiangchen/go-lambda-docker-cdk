@@ -36,8 +36,8 @@ export class LambdaStack extends cdk.Stack {
 
     lambdaConfig.forEach((config : any) => {
       // get Image tag from SSM
-      const imageTag = ssm.StringParameter.valueForStringParameter(this, `/${env}/${props.repositoryPrefix}/${config.imageName}/image_tag`);
-
+      const imageTag = ssm.StringParameter.valueForStringParameter(this, `/${env}/${props.repositoryPrefix}/${config.imageName}/image-tag`);
+      console.log(`****imageTag=${imageTag}`)
       // get the ECR repository 
       const repository = ecr.Repository.fromRepositoryName(this, `${config.functionName}-repo`, `${env}/${props.repositoryPrefix}/${config.imageName}`);
       // Create Lambda function
