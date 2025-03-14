@@ -1,16 +1,18 @@
-name: Deploy AWS Lambda with CDK
+name: Deploy VPC Stack with CDK
 
 on:
   workflow_dispatch:
-  # push:
-  #   branches:
-  #     - master
+  push:
+    branches:
+      - main
+    paths:
+      - 'cdk/lib/vpc-stack.ts'
+      - '.github/workflows/deploy-vpc.yml'
 
 env:
-  AWS_REGION: us-east-1  # Change to your region
-  ECR_REPOSITORY_PREFIX: lambda  # Prefix for your ECR repositories
-  ACCOUNT_ID: 590183754856  # Change to your account ID
-  GITHUB_ROLE_NAME: GithubActionOIDCRole  # Change to your role name
+  AWS_REGION: us-east-1
+  ACCOUNT_ID: 590183754856
+  GITHUB_ROLE_NAME: GithubActionOIDCRole
 
 permissions:
   id-token: write
@@ -18,7 +20,7 @@ permissions:
 
 jobs:
   deploy:
-    name: Deploy to AWS
+    name: Deploy VPC to AWS
     runs-on: ubuntu-latest
 
     steps:
@@ -45,7 +47,7 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: arn:aws:iam::${{ env.ACCOUNT_ID }}:role/${{ env.GITHUB_ROLE_NAME }}  # Replace with your role ARN
+          role-to-assume: arn:aws:iam::${{ env.ACCOUNT_ID }}:role/${{ env.GITHUB_ROLE_NAME }}
           aws-region: ${{ env.AWS_REGION }}
 
       # Determine ENV based on branch
@@ -71,8 +73,8 @@ jobs:
           ENV: ${{ steps.set-env.outputs.ENV }}
         working-directory: cdk
         run: |
-          export ENV=$ENV  # Set ENV in the shell (so that process.env.ENV is set)
-          cdk synth LambdaStack
+          export ENV=$ENV
+          cdk synth VpcStack
 
       # Deploy CDK Stack
       - name: CDK Deploy
@@ -80,5 +82,5 @@ jobs:
           ENV: ${{ steps.set-env.outputs.ENV }}
         working-directory: cdk
         run: |
-          export ENV=$ENV  # Set ENV in the shell (so that process.env.ENV is set)
-          cdk deploy LambdaStack --require-approval never
+          export ENV=$ENV
+          cdk deploy VpcStack --require-approval never 
