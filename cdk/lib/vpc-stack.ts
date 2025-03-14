@@ -4,6 +4,7 @@ import { Construct } from 'constructs';
 
 export class VpcStack extends cdk.Stack {
   public readonly vpc: ec2.Vpc;
+  public readonly lambdaSecurityGroup: ec2.SecurityGroup;
 
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
@@ -27,6 +28,23 @@ export class VpcStack extends cdk.Stack {
       natGateways: 1,  // Add a NAT Gateway for private subnets
     });
 
+    // Create Security Group for Lambda functions
+    this.lambdaSecurityGroup = new ec2.SecurityGroup(this, 'LambdaSecurityGroup', {
+      vpc: this.vpc,
+      description: 'Security group for Lambda functions',
+      allowAllOutbound: true,  // Allow outbound traffic for Lambda to access internet through NAT
+      securityGroupName: `${id}-lambda-sg`,
+    });
+
+    // Add ingress rules for Lambda security group
+    // By default, no inbound traffic is allowed
+    // We'll allow traffic between Lambda functions in the same security group
+    this.lambdaSecurityGroup.addIngressRule(
+      this.lambdaSecurityGroup,
+      ec2.Port.allTcp(),
+      'Allow traffic between Lambda functions'
+    );
+
     // Export the VPC for cross-stack reference
     new cdk.CfnOutput(this, 'VpcId', {
       value: this.vpc.vpcId,
@@ -41,6 +59,13 @@ export class VpcStack extends cdk.Stack {
         description: `Private Subnet ${index + 1} ID`,
         exportName: `${this.stackName}-PrivateSubnet${index + 1}Id`,
       });
+    });
+
+    // Export Lambda security group ID
+    new cdk.CfnOutput(this, 'LambdaSecurityGroupId', {
+      value: this.lambdaSecurityGroup.securityGroupId,
+      description: 'Security Group ID for Lambda functions',
+      exportName: `${this.stackName}-LambdaSecurityGroupId`,
     });
   }
 } 
