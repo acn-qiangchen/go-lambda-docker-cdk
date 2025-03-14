@@ -23,10 +23,13 @@ export class LambdaStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: LambdaStackProps) {
     super(scope, id, props);
 
+    // Get the first two AZs from the region
+    const azs = cdk.Stack.of(this).availabilityZones.slice(0, 2);
+
     // Import VPC using cross-stack reference
     const vpc = ec2.Vpc.fromVpcAttributes(this, 'ImportedVPC', {
       vpcId: cdk.Fn.importValue(`${props.vpcStackName}-VpcId`),
-      availabilityZones: cdk.Stack.of(this).availabilityZones,
+      availabilityZones: azs,
       privateSubnetIds: [
         cdk.Fn.importValue(`${props.vpcStackName}-PrivateSubnet1Id`),
         cdk.Fn.importValue(`${props.vpcStackName}-PrivateSubnet2Id`),
