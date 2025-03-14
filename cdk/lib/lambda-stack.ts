@@ -4,6 +4,7 @@ import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway'; // Import the 'apigateway' module
 import * as ssm from 'aws-cdk-lib/aws-ssm'; // Import the 'ssm' module
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import * as fs from "fs";
 import * as path from "path";
 import { Construct } from 'constructs';
@@ -12,6 +13,7 @@ interface LambdaStackProps extends cdk.StackProps {
   repositoryPrefix: string;  // Matches ECR repository prefix
   imageTag: string;          // Tag of the ECR images (e.g., commit SHA)
   vpcStackName: string;  // Name of the VPC stack for cross-stack references
+  iamStackName: string;
 }
 
 // Read the config file (relative to the CDK execution context)
@@ -35,6 +37,26 @@ export class LambdaStack extends cdk.Stack {
         cdk.Fn.importValue(`${props.vpcStackName}-PrivateSubnet2Id`),
       ],
     });
+
+    // Import Lambda security group
+    const lambdaSecurityGroup = ec2.SecurityGroup.fromSecurityGroupId(
+      this,
+      'ImportedLambdaSecurityGroup',
+      cdk.Fn.importValue(`${props.vpcStackName}-LambdaSecurityGroupId`),
+      {
+        allowAllOutbound: true,
+      }
+    );
+
+    // Import Lambda execution role
+    const lambdaRole = iam.Role.fromRoleArn(
+      this,
+      'ImportedLambdaRole',
+      cdk.Fn.importValue(`${props.iamStackName}-LambdaExecutionRoleArn`),
+      {
+        mutable: false
+      }
+    );
 
     // Create a single API Gateway for all Lambda functions
     const api = new apigateway.RestApi(this, 'LambdaApi', {
@@ -66,7 +88,9 @@ export class LambdaStack extends cdk.Stack {
           subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
           onePerAz: true  // Ensure subnet selection across all AZs
         },
-        allowPublicSubnet: false
+        securityGroups: [lambdaSecurityGroup],
+        allowPublicSubnet: false,
+        role: lambdaRole
       });
 
       // Create API resource and method

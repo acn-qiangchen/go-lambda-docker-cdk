@@ -83,4 +83,4 @@ jobs:
         working-directory: cdk
         run: |
           export ENV=$ENV
-          cdk deploy VpcStack --require-approval never 
+          cdk deploy IamStack VpcStack --require-approval never 
