@@ -1,4 +1,4 @@
-name: Deploy VPC Stack with CDK
+name: Deploy Base Infrastructure with CDK
 
 on:
   workflow_dispatch:
@@ -20,7 +20,7 @@ permissions:
 
 jobs:
   deploy:
-    name: Deploy VPC to AWS
+    name: Deploy Base Infrastructure
     runs-on: ubuntu-latest
 
     steps:
