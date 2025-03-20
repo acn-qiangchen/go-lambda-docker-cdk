@@ -1,32 +1,38 @@
 {
   "lambda": [
     {
-      "functionName": "lambda-function1",
-      "memorySize": 256,
+      "functionName": "sdbf-sbx-bff",
+      "memorySize": 128,
       "timeoutSeconds": 30,
       "path": "function1",
       "environment": {
-        "ENV": "prod"
+        "QSR_RIVER_PROJECT_ID": "eaea4f7a-b227-41c5-a129-0830b3dd395a",
+        "QSR_RIVER_ORGANIZATION_ID": "b020bd9f-bfa9-478c-937a-ed9bf9affc34",
+        "ENV": "sbx"
       },
-      "imageName": "image1"
+      "imageName": "sdbf-sbx-bff"
     },
     {
-      "functionName": "lambda-function2",
-      "memorySize": 256,
+      "functionName": "sdbf-sbx-rmu",
+      "memorySize": 128,
       "timeoutSeconds": 30,
       "path": "function2",
       "environment": {
-        "DB_HOST": "example.com"
+        "RM_TABLE_NAME": "sdpf-dev-rm-reads",
+        "ENV": "sbx"
       },
-      "imageName": "image2"
+      "imageName": "sdbf-sbx-rmu"
     },
     {
-      "functionName": "lambda-function3",
-      "memorySize": 256,
+      "functionName": "sdbf-sbx-publisher",
+      "memorySize": 128,
       "timeoutSeconds": 30,
       "path": "function3",
-      "environment": {},
-      "imageName": "image3"
+      "environment": {
+        "BOOTSTRAP_SERVERS": "b-1.sdpfsbxmsk.64kqz9.c10.kafka.us-west-2.amazonaws.com:9092,b-2.sdpfsbxmsk.64kqz9.c10.kafka.us-west-2.amazonaws.com:9092",
+        "app_env": "sbx"
+      },
+      "imageName": "sdbf-sbx-publisher"
     }
   ]
 }
