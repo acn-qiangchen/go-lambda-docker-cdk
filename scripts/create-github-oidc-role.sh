@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Configuration
-GITHUB_ORG="shearer"  # Replace with your GitHub organization/username
-REPO_NAME="go-lambda-docker-cdk"  # Replace with your repository name
+GITHUB_ORG="acn-qiangchen"  # Replace with your GitHub organization/username
+#REPO_NAME="go-lambda-docker-cdk"  # Replace with your repository name
 AWS_REGION="us-east-1"  # Replace with your AWS region
 ROLE_NAME="GithubActionOIDCRole"
 PROVIDER_URL="token.actions.githubusercontent.com"
@@ -54,7 +54,7 @@ cat << EOF > /tmp/trust-policy.json
             "Action": "sts:AssumeRoleWithWebIdentity",
             "Condition": {
                 "StringLike": {
-                    "token.actions.githubusercontent.com:sub": "repo:${GITHUB_ORG}/${REPO_NAME}:*"
+                    "token.actions.githubusercontent.com:sub": "repo:${GITHUB_ORG}/*"
                 }
             }
         }
