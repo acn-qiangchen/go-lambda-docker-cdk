@@ -11,7 +11,7 @@ on:
 
 env:
   AWS_REGION: us-east-1
-  ACCOUNT_ID: 533267153156
+  ACCOUNT_ID: 637423220670
   GITHUB_ROLE_NAME: GithubActionOIDCRole
 
 permissions:

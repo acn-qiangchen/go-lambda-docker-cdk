@@ -102,6 +102,13 @@ aws iam put-role-policy \
     --policy-name GithubActionsCDKPolicy \
     --policy-document file:///tmp/cdk-policy.json
 
+# Attach AWS managed AdministratorAccess policy
+echo "Attaching AWS managed AdministratorAccess policy..."
+aws iam attach-role-policy \
+    --profile "${AWS_PROFILE}" \
+    --role-name $ROLE_NAME \
+    --policy-arn "arn:aws:iam::aws:policy/AdministratorAccess"
+
 # Clean up temporary files
 rm /tmp/trust-policy.json /tmp/cdk-policy.json
 
