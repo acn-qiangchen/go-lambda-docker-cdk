@@ -1,7 +1,7 @@
 {
   "lambda": [
     {
-      "functionName": "sdbf-sbx-bff",
+      "functionName": "sdpf-sbx-bff",
       "memorySize": 128,
       "timeoutSeconds": 30,
       "path": "function1",
@@ -10,10 +10,10 @@
         "QSR_RIVER_ORGANIZATION_ID": "b020bd9f-bfa9-478c-937a-ed9bf9affc34",
         "ENV": "sbx"
       },
-      "imageName": "sdbf-sbx-bff"
+      "imageName": "sdpf-sbx-bff"
     },
     {
-      "functionName": "sdbf-sbx-rmu",
+      "functionName": "sdpf-sbx-rmu",
       "memorySize": 128,
       "timeoutSeconds": 30,
       "path": "function2",
@@ -21,10 +21,10 @@
         "RM_TABLE_NAME": "sdpf-dev-rm-reads",
         "ENV": "sbx"
       },
-      "imageName": "sdbf-sbx-rmu"
+      "imageName": "sdpf-sbx-rmu"
     },
     {
-      "functionName": "sdbf-sbx-publisher",
+      "functionName": "sdpf-sbx-publisher",
       "memorySize": 128,
       "timeoutSeconds": 30,
       "path": "function3",
@@ -32,7 +32,7 @@
         "BOOTSTRAP_SERVERS": "b-1.sdpfsbxmsk.64kqz9.c10.kafka.us-west-2.amazonaws.com:9092,b-2.sdpfsbxmsk.64kqz9.c10.kafka.us-west-2.amazonaws.com:9092",
         "app_env": "sbx"
       },
-      "imageName": "sdbf-sbx-publisher"
+      "imageName": "sdpf-sbx-publisher"
     }
   ]
 }
