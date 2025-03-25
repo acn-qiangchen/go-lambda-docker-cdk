@@ -5,6 +5,7 @@
 - Install [AWS CLI](https://aws.amazon.com/cli/)
 - Install Node.js and TypeScript
 - Install Go
+- add something
 
 ## Steps to Deploy
 1. Clone the repository:
@@ -18,13 +19,10 @@
    ```
 3. Bootstrap AWS CDK (if first time using CDK in your AWS account):
    ```sh
-   cdk bootstrap
+   cdk bootstrap updated something
    ```
-4. Deploy the stack:
-   ```sh
-   cdk deploy
    ```
-5. Get the API Gateway endpoint from the output and test:
+4. Get the API Gateway endpoint from the output and test:
    ```sh
    curl -X GET <API_GATEWAY_URL>
    ```
